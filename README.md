@@ -7,7 +7,9 @@ Per its website on the  <a href = "https://www.pbgc.gov/prac/risk-mitigation">Ea
 
 
 ## 2. Data Sources
-<a href = "https://www.pbgc.gov/open/index">PGGC Open Data</a>
-<a href = "https://www.pbgc.gov/about/budget-performance-and-planning/statebystate"> PBGC benefits paid across number of retirees by congressional district per state</a>
-<a href = "https://www.dol.gov/agencies/ebsa/about-ebsa/our-activities/public-disclosure/foia/form-5500-datasets">US DOL Form 5500 Annual Return/Report of Employee Benefit Plan</a>
-<a href = "https://www.sec.gov/dera/data/financial-statement-data-sets.html">SEC Filings</a>
+<ul>
+<li><a href = "https://www.pbgc.gov/open/index">PGGC Open Data</a></li>
+<li><a href = "https://www.pbgc.gov/about/budget-performance-and-planning/statebystate"> PBGC benefits paid across number of retirees by congressional district per state</a></li>
+<li><a href = "https://www.dol.gov/agencies/ebsa/about-ebsa/our-activities/public-disclosure/foia/form-5500-datasets">US DOL Form 5500 Annual Return/Report of Employee Benefit Plan</a></li>
+<li><a href = "https://www.sec.gov/dera/data/financial-statement-data-sets.html">SEC Filings</a></li>
+</ul>
