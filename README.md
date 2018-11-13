@@ -9,8 +9,8 @@
 <p>In its <a href ="https://www.pbgc.gov/sites/default/files/pbgc-strategic-plan-2018-2022.pdf">Strategic Plan FY2018-2022</a>, the PBGC indicates that it utilizes stochastic modeling to run many simulations under a variety of economic scenarios to derive a probabilistic forecast.</p>
 
 ## The Problem
-I want to use publicly available data on pension plan sponsors to predict the funded status of a pension plan at a given point in time.  I will rely primarily on PBGC filings, along with Form 5500 information (filed with the Department of Labor) and SEC filings.  Since measures of funded status rely on interest rates, I will also use interest rate data from a Kaggle dataset.
-There are non-trivial costs associated with gathering information for plans which are or may become underfunded; therefore I would like to create a model that allows interested parties to make predictions using free, publicly available data.
+<p>I will use publicly available data on pension plan sponsors covered by the PBGC to predict the funded status of a pension plan at a given point in time.  I will rely primarily on PBGC filings, along with Form 5500 information (filed with the Department of Labor) and SEC filings.  Since measures of funded status rely on interest rates, I will also use interest rate data from a Kaggle dataset.</p>
+<p>Gathering information and performing actuarial valuations for plans which are currently or are projected to become underfunded is costly; therefore I am going to try and create a model that allows interested parties to make predictions on a pension plan's funded status using free, publicly available data.</p>
 
 ## Data Sources and Storage
 <ul>
