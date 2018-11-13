@@ -1,4 +1,4 @@
-<a href="https://www.forbes.com/sites/nextavenue/2018/10/22/the-next-retirement-crisis-americas-public-pensions/#2146b77a26f2"></a><img src="/images/pension_gamble.png" alt="the pension gamble"></a>
+<a href="https://www.forbes.com/sites/nextavenue/2018/10/22/the-next-retirement-crisis-americas-public-pensions/#2146b77a26f2"><img src="/images/pension_gamble.jpg" alt="the pension gamble"></a>
 
 # Predicting Pension Funded Status
 
