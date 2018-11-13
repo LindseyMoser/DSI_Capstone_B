@@ -15,6 +15,7 @@ I want to use publicly available data on pension plan sponsors to predict the fu
 <li><a href = "https://www.pbgc.gov/about/budget-performance-and-planning/statebystate"> PBGC benefits paid across number of retirees by congressional district per state</a></li>
 <li><a href = "https://www.dol.gov/agencies/ebsa/about-ebsa/our-activities/public-disclosure/foia/form-5500-datasets">US DOL Form 5500 Annual Return/Report of Employee Benefit Plan</a></li>
 <li><a href = "https://www.sec.gov/dera/data/financial-statement-data-sets.html">SEC Filings</a></li>
+<li><a href = "https://www.kaggle.com/sohier/interest-rate-records">Historical federal interest rate records</a></li>
 </ul>
 <p>The data is currently being stored in an Amazon S3 bucket.</p>
 
