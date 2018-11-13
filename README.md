@@ -20,7 +20,7 @@ I want to use publicly available data on pension plan sponsors to predict the fu
 <p>The data is currently being stored in an Amazon S3 bucket.</p>
 
 ## Technology Stack
-
+<img src="/images/python_img.png" alt="python">
 
 
 ## Presentation
