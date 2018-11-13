@@ -1,3 +1,5 @@
+<a href="https://www.forbes.com/sites/nextavenue/2018/10/22/the-next-retirement-crisis-americas-public-pensions/#2146b77a26f2"></a><img src="/images/pension_gamble.png" alt="the pension gamble"></a>
+
 # Predicting Pension Funded Status
 
 ## Background and Motivation
@@ -21,6 +23,9 @@ I want to use publicly available data on pension plan sponsors to predict the fu
 
 ## Technology Stack
 <img src="/images/python_img.png" alt="python">
+<img src="/images/postgres_img.png" alt="postgres_sql">
+<img src="/images/numpy_img.png" alt="numpy">
+<img src="/images/aws_img.png" alt="amazon web services">
 
 
 ## Presentation
