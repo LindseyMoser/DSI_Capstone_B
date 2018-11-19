@@ -5,6 +5,18 @@ COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form55
 COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2016_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2015_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 
+COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2014_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2013_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2012_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+
+## Drop columns that are not in 2012 and 2013 SB:
+ALTER TABLE sb_full
+DROP COLUMN SB_RTD_VSTD_TGT_AMT,
+DROP COLUMN SB_TERM_VSTD_FNDNG_TGT_AMT,
+DROP COLUMN SB_TOT_VSTD_FNDNG_TGT_AMT,
+DROP COLUMN SB_INT_PRIOR_YEAR_ACTUAL_AMT;
+
+
 ## CREATE TABLE - ALL FIELDS:
 
 CREATE TABLE sb_full (
