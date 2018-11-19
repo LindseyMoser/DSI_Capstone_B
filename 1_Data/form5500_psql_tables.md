@@ -1,9 +1,9 @@
 
 ## LOAD CSV INTO TABLE:
 
-COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_A/form5500_data/f_5500_2017_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
-COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_A/form5500_data/f_5500_2016_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
-COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_A/form5500_data/f_5500_2015_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/f_5500_2017_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/f_5500_2016_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/f_5500_2015_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 
 ## Drop columns that are only in 2017 file (not in 2016 or 2015)
 ALTER TABLE f5500_full

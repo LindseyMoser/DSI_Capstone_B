@@ -1,9 +1,9 @@
 
 ## LOAD CSV INTO TABLE:
 
-COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_A/form5500_data/F_SCH_SB_2017_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
-COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_A/form5500_data/F_SCH_SB_2016_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
-COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_A/form5500_data/F_SCH_SB_2015_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2017_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2016_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY sb_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_SB_2015_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 
 ## CREATE TABLE - ALL FIELDS:
 
@@ -129,30 +129,3 @@ CREATE TABLE sb_full (
   SB_TOT_VSTD_FNDNG_TGT_AMT bigint,
   SB_INT_PRIOR_YEAR_ACTUAL_AMT bigint
 );
-
-
-## Kendal's example:
-CREATE TABLE ori_to_fips (
-FIPS_ST  smallint,
-FIPS_COUNTY smallint,
-FIPS bigint NOT NULL,
-ORI9 character(9),
-NAME character varying(100),
-STATENAME character(5),
-COUNTYNAME character varying(100),
-GOVID bigint,
-LG_NAME character varying(100),
-ADDRESS_NAME character varying(100),
-ADDRESS_STR1 character varying(100),
-ADDRESS_STR2 character varying(100),
-ADDRESS_CITY character varying(100),
-ADDRESS_STATE character(2)
-ADDRESS_ZIP bigint,
-INTPTLAT numeric,
-INTPTLONG numeric
-);
-
-CREATE TABLE table_name (
- column_name TYPE column_constraint,
- table_constraint table_constraint
-) INHERITS existing_table_name;
