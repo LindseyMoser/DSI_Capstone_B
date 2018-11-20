@@ -1,14 +1,44 @@
 
-## LOAD CSV INTO TABLE:
+## Load CSV Files into Tables:
 
 COPY h_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_H_2017_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 COPY h_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_H_2016_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 COPY h_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_H_2015_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 
-## Drop columns that are only in 2017 and 2016 file (not in 2015)
+COPY h_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_H_2014_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY h_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_H_2013_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+COPY h_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/F_SCH_H_2012_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
+
+
+## Drop columns that are only in 2017 and 2016 file (not in 2015 and prior)
 ALTER TABLE h_full
 DROP COLUMN DISTRIB_MADE_EMPLOYEE_62_IND,
 DROP COLUMN PREMIUM_FILING_CONFIRM_NUMBER;
+
+## Drop columns that are in 2017 - 2015 (not in 2014 and prior):
+ALTER TABLE h_full
+DROP COLUMN TRUST_INCUR_UNREL_TAX_INC_IND,
+DROP COLUMN TRUST_INCUR_UNREL_TAX_INC_AMT,
+DROP COLUMN IN_SERVICE_DISTRIB_IND,
+DROP COLUMN IN_SERVICE_DISTRIB_AMT,
+DROP COLUMN FDCRY_TRUSTEE_CUST_NAME,
+DROP COLUMN FDCRY_TRUST_CUST_PHON_NUM,
+DROP COLUMN FDCRY_TRUST_CUST_PHON_NU_FORE;
+
+## CREATE TABLE to preserve COVERED_PBGC_INSURANCE_IND (not in 2012 and prior):
+CREATE TABLE h_pbgc_cov_ind (
+  ACK_ID character varying(30),
+  SCH_H_PLAN_YEAR_BEGIN_DATE date,
+  SCH_H_PN bigint,
+  SCH_H_EIN bigint,
+  COVERED_PBGC_INSURANCE_IND character varying(1)
+);
+
+## DROP COVERED_PBGC_INSURANCE_IND From h_full (not in 2012 and prior):
+ALTER TABLE h_full
+DROP COLUMN COVERED_PBGC_INSURANCE_IND;
+
+INSERT INTO test_h (ACK_ID, SCH_H_PLAN_YEAR_BEGIN_DATE, SCH_H_PN, SCH_H_EIN, COVERED_PBGC_INSURANCE_IND) SELECT ACK_ID, SCH_H_PLAN_YEAR_BEGIN_DATE, SCH_H_PN, SCH_H_EIN, COVERED_PBGC_INSURANCE_IND FROM h_full;
 
 ## CREATE TABLE - ALL FIELDS:
 
