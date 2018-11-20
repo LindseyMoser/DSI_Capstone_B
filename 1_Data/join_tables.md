@@ -10,13 +10,17 @@ FROM sb_full sb
     ON sb.SB_EIN = h.SCH_H_EIN AND sb.SB_PN = h.SCH_H_PN
   WHERE sb.SB_PLAN_YEAR_BEGIN_DATE BETWEEN '2017-01-01' AND '2017-12-31';
 
+## Pull plan sponsor name
 
+SELECT f.SPONSOR_DFE_NAME, f.SPONS_DFE_DBA_NAME, f.SPONS_DFE_CARE_OF_NAME,
 
-SELECT Book.BookID AS "Book ID" ,Book.Title AS "Book title"   
-,SUM(OrderLine.quantity) AS "Number Ordered" ,ShopOrder.OrderDate AS  
-"Order Date" FROM Book
-INNER JOIN OrderLine ON Book.BookID = OrderLine.BookID
-INNER JOIN Publisher ON Book.PublisherID = Publisher.PublisherID
-INNER JOIN ShopOrder ON OrderLine.ShopOrderID = ShopOrder.ShopOrderID
-WHERE Publisher.Name = 'Smith Smitheson'
-GROUP BY ShopOrder.OrderDate, Name, Book.BookID
+## Look at Form 5500 - how many have Sch SB attached by year
+
+SELECT f.TYPE_PLAN_ENTITY_CD, f.SPONSOR_DFE_NAME, f.FORM_PLAN_YEAR_BEGIN_DATE, f.SPONS_DFE_DBA_NAME, f.SCH_SB_ATTACHED_IND
+  FROM f5500_full f
+
+## Preliminary Model Features
+
+SELECT sb.SB_TOT_PARTCP_CNT, sb.SB_PLAN_AT_RISK_IND, sb.SB_EFF_INT_RATE_PRCNT, sb.SB_PLAN_YEAR_BEGIN_DATE, sb.SB_FNDNG_SHORT_IND, \
+       sb.SB_PR_YR_FNDNG_PRCNT, sb.SB_FNDNG_TGT_PRCNT, sb.SB_TOT_FNDNG_TGT_AMT, sb.SB_CURR_VALUE_AST_01_AMT \
+FROM sb_full sb;
