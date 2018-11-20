@@ -9,13 +9,7 @@ COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/for
 COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/f_5500_2013_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 COPY f5500_full FROM '/Users/moserfamily/Documents/DSI/DSI_Capstone_B/1_Data/form5500_data/f_5500_2012_latest.csv' DELIMITER ',' CSV HEADER QUOTE '"';
 
-## Drop columns not in 2014 and earlier files
-ALTER TABLE f5500_full
-DROP COLUMN DFE_MANUAL_SIGNED_DATE,
-DROP COLUMN DFE_MANUAL_SIGNED_NAME;
-
-
-## Drop columns that are only in 2017 file (not in 2016 or 2015)
+## Drop columns that are only in 2017 file (not in 2016 or 2015):
 ALTER TABLE f5500_full
 DROP COLUMN LAST_RPT_PLAN_NAME,
 DROP COLUMN SPONS_MANUAL_SIGNED_DATE,
@@ -23,6 +17,17 @@ DROP COLUMN SPONS_MANUAL_SIGNED_NAME,
 DROP COLUMN DFE_MANUAL_SIGNED_DATE,
 DROP COLUMN DFE_MANUAL_SIGNED_NAME;
 
+## Drop columns not in 2014 and earlier files:
+ALTER TABLE f5500_full
+DROP COLUMN ADMIN_MANUAL_SIGNED_DATE,
+DROP COLUMN ADMIN_MANUAL_SIGNED_NAME;
+
+## Drop columns not in 2013 and earlier files:
+ALTER TABLE f5500_full
+DROP COLUMN TOT_ACT_PARTCP_BOY_CNT,
+DROP COLUMN SUBJ_M1_FILING_REQ_IND,
+DROP COLUMN COMPLIANCE_M1_FILING_REQ_IND,
+DROP COLUMN M1_RECEIPT_CONFIRMATION_CODE;
 
 ## CREATE TABLE - ALL FIELDS:
 
