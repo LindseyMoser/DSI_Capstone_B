@@ -39,6 +39,18 @@ def get_data():
     conn.close()
     return df
 
+def create_fs_buckets(row):
+    if row['sb_fndng_tgt_prcnt'] <= 60:
+        return 'FS <= 60%'
+    if row['sb_fndng_tgt_prcnt'] <= 80:
+        return '60% < FS <= 80%'
+    if row['sb_fndng_tgt_prcnt'] <= 90:
+        return '80% < FS <= 90%'
+    if row['sb_fndng_tgt_prcnt'] <= 100:
+        return '90% < FS <= 100%'
+    else:
+        return 'FS > 100%'
+    
 def clean_data(df, train=False):
     
     '''
@@ -54,7 +66,6 @@ def clean_data(df, train=False):
     buckets = pd.IntervalIndex.from_tuples([(-100, 60), (60, 80), (80, 90), (90, 100), (100, 999.)])
     
     df_clean['py_ft_bucket'] = pd.cut(df_clean['sb_pr_yr_fndng_prcnt'], buckets)
-    df_clean['ft_bucket'] = pd.cut(df_clean['sb_fndng_tgt_prcnt'], buckets)
     
     df_clean = pd.get_dummies(data=df_clean, columns=['py_ft_bucket'], drop_first=True)
     
@@ -62,17 +73,16 @@ def clean_data(df, train=False):
     df_clean['sector'] = df_clean['business_code'].str[:2]
     df_clean = pd.concat([df_clean, pd.get_dummies(df_clean['sector'].values, prefix_sep='sect_', drop_first=True)],axis=1)
 
-    
     #drop un-needed columns
-    drop_list=['business_code', 'sector', 'sb_pr_yr_fndng_prcnt', 'sb_fndng_tgt_prcnt']    
+    drop_list=['business_code', 'sector', 'sb_pr_yr_fndng_prcnt']    
     #drop_list=['business_code', 'sector']
     df_clean.drop(drop_list, inplace=True, axis=1)
  
     df_clean.dropna(inplace=True)
        
     if train:
-        y = df_clean['ft_bucket'].values
-        df_clean.drop('ft_bucket', inplace=True, axis=1)
+        y = df_clean.apply(lambda row: create_fs_buckets(row), axis=1)
+        df_clean.drop('sb_fndng_tgt_prcnt', inplace=True, axis=1)
         return df_clean, y
     else:
         return df_clean
