@@ -6,7 +6,6 @@ Created on Tue Nov 20 15:23:05 2018
 @author: moserfamily
 """
 import pandas as pd
-import numpy as np
 import psycopg2
 import json
 
