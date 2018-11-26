@@ -91,7 +91,7 @@ def clean_data(df, year):
        
     return df_clean
 
-def get_feats(df):
+def get_feats(df, year):
     
     '''
     Returns features dataframe for model
@@ -99,10 +99,21 @@ def get_feats(df):
     Output: Features only
     
     '''
-    df_feat = df.copy()
+    feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)]
+    df_feat = df[feat_list]
     
-    #drop un-needed columns
-    drop_list=['business_code', 'sector', 'sb_pr_yr_fndng_prcnt']    
-    #drop_list=['business_code', 'sector']
-    df_feat.drop(drop_list, inplace=True, axis=1)
- 
+    return df_feat
+
+def get_target(df, year):
+    
+    '''
+    Returns target for training model
+    Input:  Pandas DF
+    Output: Target only
+    
+    '''
+    target = df['fndng_tgt_{}'.format(year+1)]
+    
+    return target
+       
+    
