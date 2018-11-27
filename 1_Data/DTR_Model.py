@@ -3,54 +3,39 @@
 
 from sklearn.tree import DecisionTreeRegressor
 
-from get_clean_data_DTR import get_data, clean_data, get_feats
-from sklearn.ensemble import GradientBoostingClassifier
+from get_clean_data_DTR import get_data, clean_data, get_feats, get_target
+
 import pickle
 
 class DTR(object):
     
-    def __init__(self, data_path):
-        self.data_path = data_path
-        self.columns = None
+    def __init__(self, predict_year):
+        self.predict_year = predict_year
     
-    def get_data(self):      
+    def fit(self, X, y):
         '''
-        Create dataframe from raw json file
-        Create features set X
-        Create targets set y
+        Fit Decision Tree Regressor with training data
         '''
-        raw_df = create_df(self.data_path)
-        df = clean_data(raw_df, False)
-        X = create_features_df(df)
-        self.columns = X.columns
-        y = df['fraud'].values
-        return X, y
-            
-    def fit(self, X_train, y_train):
+        self.model = DecisionTreeRegressor(max_depth=4)
+        self.model.fit(X, y)
+         
+    def predict(self, X):
         '''
-        Fit Gradient Boosted Classifier with training data
+        Returns predicted Funding Target
         '''
-        self.model = GradientBoostingClassifier(n_estimators=500, max_depth=8, subsample=0.5, 
-                                                    max_features='auto', learning_rate=0.05)
-        self.model.fit(X_train, y_train)
-     
-    def predict_proba(self, X_test):
-        '''
-        Returns predicted probabilities for not fraud / fraud
-        '''
-        return self.model.predict_proba(X_test)[:,1]
-    
-    def predict(self, X_test):
-        '''
-        Returns predicted class ( 0= not fraud / 1 = fraud)
-        '''
-        return self.model.predict(X_test)
+        return self.model.predict(X)
     
 
 if __name__ == '__main__':
-    data_path = "../data/data.json"
-    model = FraudModel(data_path)
-    X, y = model.get_data()
+    predict_year = 2015
+    data_year = predict_year-1
+    raw_df = get_data(data_year)
+    df = clean_data(raw_df, data_year)
+    X = get_feats(df, data_year)
+    y = get_target(df, data_year)
+    
+    model = DTR(predict_year)
+
     model.fit(X, y)
     
     with open('model.pkl', 'wb') as f:
