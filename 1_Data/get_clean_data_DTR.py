@@ -79,6 +79,8 @@ def clean_data(df, year):
     df_clean['pbgc_takeover'] = df_clean['type_pension_bnft_code'].str.contains('1H')
     df_clean['not_qual'] = df_clean['type_pension_bnft_code'].str.contains('3B','3C')
     
+     # Restrict analysis to plans with between 100 and 300,000 participants
+     
     df_clean = df_clean[(df_clean['fndng_tgt_{}'.format(year)] > 0) & (df_clean['fndng_tgt_{}'.format(year+1)] > 0) &\
               (df_clean['part_cnt_{}'.format(year)] < 300000) & (df_clean['part_cnt_{}'.format(year)] > 100) & \
               (df_clean['not_qual'] == False)]

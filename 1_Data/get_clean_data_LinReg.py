@@ -58,8 +58,15 @@ def get_data(year):
 def clean_data(df, year):
     
     '''
-    Cleans data for model
-    Input:  Pandas DF, train=True if model is being trained
+    Cleans data for model:
+            - Cast Participant Count to number
+            - Divide Effective Interest Rate by 100 if greater than 100 (correction for observed data entry variation)
+            - Add boolean columns to indicate if plan is pay related, cash balance, frozen, taken over by PBGC, not qualified
+            - Drop filings with $0 funding target and filings of non-qualified plans
+            - Drop nas
+            - Drop largest plan
+            
+    Input:  Pandas DF, year 
     Output: cleaned Pandas DF, target array y if model is being trained
     
     '''
@@ -69,7 +76,8 @@ def clean_data(df, year):
     for col in clean_list:
         df_clean[col] = pd.to_numeric(df_clean[col])
 
-    df_clean['eir'] = np.where(df_clean['eir']>100, df_clean['eir']/100, df_clean['eir'])   
+    df_clean['eir'] = np.where(df_clean['eir']>100, df_clean['eir']/100**2, df_clean['eir']/100)   
+    
     
     #Pension Benefit Code gives informaiton on types of benefits provided by plan
     
@@ -79,11 +87,16 @@ def clean_data(df, year):
     df_clean['pbgc_takeover'] = df_clean['type_pension_bnft_code'].str.contains('1H')
     df_clean['not_qual'] = df_clean['type_pension_bnft_code'].str.contains('3B','3C')
     
+    # Restrict analysis to plans with between 100 and 300,000 participants
+    
     df_clean = df_clean[(df_clean['fndng_tgt_{}'.format(year)] > 0) & (df_clean['fndng_tgt_{}'.format(year+1)] > 0) &\
-              (df_clean['part_cnt_{}'.format(year)] < 300000) & (df_clean['part_cnt_{}'.format(year)] > 100) & \
+            #  (df_clean['part_cnt_{}'.format(year)] < 300000) & (df_clean['part_cnt_{}'.format(year)] > 100) & \
               (df_clean['not_qual'] == False)]
     
     df_clean.dropna(inplace=True)
+    
+    #drop largest plan by ptp cnt
+    df_clean = df_clean.loc[df_clean['part_cnt_{}'.format(year)] != df_clean['part_cnt_{}'.format(year)].max()]
        
     return df_clean
 
@@ -96,9 +109,12 @@ def get_feats(df, year):
     
     '''
     feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)]
-    df_feat = df[feat_list]
+    X = df[feat_list].copy()
+    X['eir_ft'] = X['eir'] * X['fndng_tgt_{}'.format(year)]
+    X['eir_tnc'] = X['eir'] * X['tgt_nrml_cost_{}'.format(year)]
+    X['eir_pmt'] = X['eir'] * X['pmts_to_part_{}'.format(year)]
     
-    return df_feat
+    return X
 
 def get_target(df, year):
     
@@ -111,5 +127,13 @@ def get_target(df, year):
     target = df['fndng_tgt_{}'.format(year+1)]
     
     return target
-       
+
+def partition_feats_by_ptp_cnt(X, y, year):
+    
+    X = X_all[(X_all['part_cnt_{}'.format(year)] > min_count) & (X_all['part_cnt_{}'.format(year)] <= max_count)]
+    y = y_all[(X_all['part_cnt_{}'.format(year)] > min_count) & (X_all['part_cnt_{}'.format(year)] <= max_count)]
+
+
+    
+    return part_df
     

@@ -18,7 +18,9 @@ def plot_results(y_true, y_pred):
     
     '''
     plt.figure(figsize=(20,8))
-    plt.scatter(y_true,y_pred, s=20, color=next(colors), label="data")
+    xx = np.linspace(0, len(y_true), len(y_true))
+    plt.plot(xx, y_true, color='cyan', label='Actual Funding Target')
+    plt.plot(xx, y_pred, color='magenta', label='Predicted Funding Target' )
     plt.xlabel("data")
     plt.ylabel("Funding Target")
     plt.title("Predicting Funding Target from Linear Regression trained on 2014 data")
