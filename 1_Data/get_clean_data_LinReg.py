@@ -103,15 +103,42 @@ def get_feats(df, year):
     
     '''
     Returns features dataframe for model
-    Input:  Pandas DF
-    Output: Features only
+    Input:  Pandas DF of cleaned data
+    Output: Pandas DF of features only
     
     '''
     feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)]
     X = df[feat_list].copy()
+    X['eir_ft'] = (1 + X['eir']) * X['fndng_tgt_{}'.format(year)]
+    X['eir_tnc'] = (1 + X['eir']) * X['tgt_nrml_cost_{}'.format(year)]
+    X['eir_pmt'] = (1 + X['eir']/2) * X['pmts_to_part_{}'.format(year)]
+    
+    #prelim OLS results indicate not important features:
+    X.drop(['eir','fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)], axis=1, inplace=True)
+    
+    return X
+
+def get_feats_with_plan_name(df, year):
+    
+    '''
+    Returns features dataframe for model
+    Input:  Pandas DF of cleaned data
+    Output: Pandas DF of features with plan name, sponsor name, ein, pn, pension benefit code
+    
+    '''
+    feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)]
+    
+    more_feats = ['ein', 'pn', 'plan_name', 'sponsor_dfe_name', 'type_pension_bnft_code']
+    
+    feat_list += more_feats
+    
+    X = df[feat_list].copy()
     X['eir_ft'] = X['eir'] * X['fndng_tgt_{}'.format(year)]
     X['eir_tnc'] = X['eir'] * X['tgt_nrml_cost_{}'.format(year)]
-    X['eir_pmt'] = X['eir'] * X['pmts_to_part_{}'.format(year)]
+    X['eir_pmt'] = X['eir'] * X['pmts_to_part_{}'.format(year)]/2
+    
+    #prelim OLS results indicate not important features:
+    X.drop(['eir'], axis=1, inplace=True)    
     
     return X
 
@@ -144,7 +171,9 @@ def partition_feats_by_ptp_cnt(year):
         max_count = i[1]
         X_part = X[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)] 
         y_part = y[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)]
-        part_dict["part_cnt" + str(i)] = (X_part,y_part)
-    
+        #part_dict["part_cnt" + str(i)] = (X_part,y_part)
+        X_part.drop('part_cnt_{}'.format(year), axis=1, inplace=True)
+        part_dict[i] = (X_part,y_part)
+        
     return part_dict
     
