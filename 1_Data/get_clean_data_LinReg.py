@@ -70,7 +70,8 @@ def clean_data(df, year):
     Output: cleaned Pandas DF, target array y if model is being trained
     
     '''
-    df_clean = df.copy()
+     #drop duplicates
+    df_clean = df.drop_duplicates()
     
     clean_list = ['part_cnt_{}'.format(year), 'part_cnt_{}'.format(year+1)]
     for col in clean_list:
@@ -87,17 +88,15 @@ def clean_data(df, year):
     df_clean['pbgc_takeover'] = df_clean['type_pension_bnft_code'].str.contains('1H')
     df_clean['not_qual'] = df_clean['type_pension_bnft_code'].str.contains('3B','3C')
     
-    # Restrict analysis to plans with between 100 and 300,000 participants
-    
+     
     df_clean = df_clean[(df_clean['fndng_tgt_{}'.format(year)] > 0) & (df_clean['fndng_tgt_{}'.format(year+1)] > 0) &\
-            #  (df_clean['part_cnt_{}'.format(year)] < 300000) & (df_clean['part_cnt_{}'.format(year)] > 100) & \
               (df_clean['not_qual'] == False)]
     
     df_clean.dropna(inplace=True)
     
     #drop largest plan by ptp cnt
     df_clean = df_clean.loc[df_clean['part_cnt_{}'.format(year)] != df_clean['part_cnt_{}'.format(year)].max()]
-       
+    
     return df_clean
 
 def get_feats(df, year):
@@ -128,12 +127,24 @@ def get_target(df, year):
     
     return target
 
-def partition_feats_by_ptp_cnt(X, y, year):
+def partition_feats_by_ptp_cnt(year):
     
-    X = X_all[(X_all['part_cnt_{}'.format(year)] > min_count) & (X_all['part_cnt_{}'.format(year)] <= max_count)]
-    y = y_all[(X_all['part_cnt_{}'.format(year)] > min_count) & (X_all['part_cnt_{}'.format(year)] <= max_count)]
-
-
+    #partition_list = [0,50,300,500,800,1500,2500,5000,10000,50000,100000,500000]
+    partition_list = [(0,50),(50,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
+    part_dict = {}
     
-    return part_df
+    prelim_df = get_data(year)
+    df = clean_data(prelim_df, year)
+    
+    X = get_feats(df, year)
+    y = get_target(df, year)
+    
+    for i in partition_list[0:len(partition_list)]:
+        min_count = i[0]
+        max_count = i[1]
+        X_part = X[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)] 
+        y_part = y[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)]
+        part_dict["part_cnt" + str(i)] = (X_part,y_part)
+    
+    return part_dict
     
