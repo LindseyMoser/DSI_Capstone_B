@@ -98,7 +98,11 @@ def clean_data(df, year):
     #drop largest plan by ptp cnt
     df_clean = df_clean.loc[df_clean['part_cnt_{}'.format(year)] != df_clean['part_cnt_{}'.format(year)].max()]
     
-    return df_clean
+    #add length of pension_bft_code field to determine duplicates
+    df_clean['bnft_code_length'] = df_clean['type_pension_bnft_code'].str.len()
+    df_clean_no_dupes = df_clean.sort_values('bnft_code_length', ascending=False).groupby(['ein', 'pn']).head(1)
+    
+    return df_clean_no_dupes
 
 def get_feats(df, year):
     
@@ -156,7 +160,7 @@ def get_target(df, year):
 def partition_feats_by_ptp_cnt(year):
     
     #partition_list = [0,50,300,500,800,1500,2500,5000,10000,50000,100000,500000]
-    partition_list = [(0,50),(50,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
+    partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     part_dict = {}
     
     prelim_df = get_data(year)
@@ -179,7 +183,7 @@ def partition_feats_by_ptp_cnt(year):
 def partition_more_feats_by_ptp_cnt(year):
     
     #partition_list = [0,50,300,500,800,1500,2500,5000,10000,50000,100000,500000]
-    partition_list = [(0,50),(50,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
+    partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     part_dict = {}
     
     prelim_df = get_data(year)
