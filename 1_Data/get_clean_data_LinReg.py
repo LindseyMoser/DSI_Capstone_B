@@ -32,6 +32,7 @@ def get_data(year):
                 sb.SB_TGT_NRML_COST_01_AMT AS TGT_NRML_COST_{0}, 
                 sb2.SB_TOT_FNDNG_TGT_AMT AS FNDNG_TGT_{1},
                 sb2.SB_TOT_PARTCP_CNT AS PART_CNT_{1}, 
+                sb2.SB_EFF_INT_RATE_PRCNT AS EIR_{1},
                 f.TYPE_PENSION_BNFT_CODE, 
                 f.PLAN_NAME, 
                 f.SPONSOR_DFE_NAME,
@@ -78,7 +79,7 @@ def clean_data(df, year):
         df_clean[col] = pd.to_numeric(df_clean[col])
 
     df_clean['eir'] = np.where(df_clean['eir']>100, df_clean['eir']/100**2, df_clean['eir']/100)   
-    
+    df_clean['eir_{}'.format(year+1)] = np.where(df_clean['eir_{}'.format(year+1)]>100, df_clean['eir_{}'.format(year+1)]/100**2, df_clean['eir_{}'.format(year+1)]/100)
     
     #Pension Benefit Code gives informaiton on types of benefits provided by plan
     
@@ -118,7 +119,7 @@ def get_feats(df, year):
     
     return X
 
-def get_feats_with_plan_name(df, year):
+def get_more_feats(df, year):
     
     '''
     Returns features dataframe for model
@@ -127,19 +128,17 @@ def get_feats_with_plan_name(df, year):
     
     '''
     feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)]
-    
-    more_feats = ['ein', 'pn', 'plan_name', 'sponsor_dfe_name', 'type_pension_bnft_code']
+
+    more_feats = ['ein', 'pn', 'plan_name', 'sponsor_dfe_name', 'type_pension_bnft_code', 'eir_{}'.format(year+1)]
     
     feat_list += more_feats
     
     X = df[feat_list].copy()
-    X['eir_ft'] = X['eir'] * X['fndng_tgt_{}'.format(year)]
-    X['eir_tnc'] = X['eir'] * X['tgt_nrml_cost_{}'.format(year)]
-    X['eir_pmt'] = X['eir'] * X['pmts_to_part_{}'.format(year)]/2
-    
-    #prelim OLS results indicate not important features:
-    X.drop(['eir'], axis=1, inplace=True)    
-    
+    X['eir_ft'] = (1 + X['eir']) * X['fndng_tgt_{}'.format(year)]
+    X['eir_tnc'] = (1 + X['eir']) * X['tgt_nrml_cost_{}'.format(year)]
+    X['eir_pmt'] = (1 + X['eir']/2) * X['pmts_to_part_{}'.format(year)]
+    X['diff_eir'] = X['eir_{}'.format(year+1)] - X['eir']
+        
     return X
 
 def get_target(df, year):
@@ -177,3 +176,25 @@ def partition_feats_by_ptp_cnt(year):
         
     return part_dict
     
+def partition_more_feats_by_ptp_cnt(year):
+    
+    #partition_list = [0,50,300,500,800,1500,2500,5000,10000,50000,100000,500000]
+    partition_list = [(0,50),(50,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
+    part_dict = {}
+    
+    prelim_df = get_data(year)
+    df = clean_data(prelim_df, year)
+    
+    X = get_more_feats(df, year)
+    y = get_target(df, year)
+    
+    for i in partition_list[0:len(partition_list)]:
+        min_count = i[0]
+        max_count = i[1]
+        X_part = X[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)] 
+        y_part = y[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)]
+        #part_dict["part_cnt" + str(i)] = (X_part,y_part)
+        X_part.drop('part_cnt_{}'.format(year), axis=1, inplace=True)
+        part_dict[i] = (X_part,y_part)
+        
+    return part_dict
