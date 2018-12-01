@@ -32,6 +32,7 @@ def get_data(year):
                 sb.SB_TGT_NRML_COST_01_AMT AS TGT_NRML_COST_{0}, 
                 sb2.SB_TOT_FNDNG_TGT_AMT AS FNDNG_TGT_{1},
                 sb2.SB_TOT_PARTCP_CNT AS PART_CNT_{1}, 
+                sb2.SB_EFF_INT_RATE_PRCNT AS EIR_{1},
                 f.TYPE_PENSION_BNFT_CODE, 
                 f.PLAN_NAME, 
                 f.SPONSOR_DFE_NAME,
@@ -63,13 +64,15 @@ def clean_data(df, year):
     Output: cleaned Pandas DF, target array y if model is being trained
     
     '''
-    df_clean = df.copy()
+     #drop duplicates
+    df_clean = df.drop_duplicates()
     
     clean_list = ['part_cnt_{}'.format(year), 'part_cnt_{}'.format(year+1)]
     for col in clean_list:
         df_clean[col] = pd.to_numeric(df_clean[col])
 
-    df_clean['eir'] = np.where(df_clean['eir']>100, df_clean['eir']/100, df_clean['eir'])   
+    df_clean['eir'] = np.where(df_clean['eir']>100, df_clean['eir']/100**2, df_clean['eir']/100)   
+    df_clean['eir_{}'.format(year+1)] = np.where(df_clean['eir_{}'.format(year+1)]>100, df_clean['eir_{}'.format(year+1)]/100**2, df_clean['eir_{}'.format(year+1)]/100)
     
     #Pension Benefit Code gives informaiton on types of benefits provided by plan
     
@@ -77,17 +80,21 @@ def clean_data(df, year):
     df_clean['cash_bal'] = df_clean['type_pension_bnft_code'].str.contains('1C')
     df_clean['frozen'] = df_clean['type_pension_bnft_code'].str.contains('1I')
     df_clean['pbgc_takeover'] = df_clean['type_pension_bnft_code'].str.contains('1H')
-    df_clean['not_qual'] = df_clean['type_pension_bnft_code'].str.contains('3B','3C')
+    df_clean['not_qual'] = df_clean['type_pension_bnft_code'].str.contains('3B','3C') 
     
-     # Restrict analysis to plans with between 100 and 300,000 participants
-     
     df_clean = df_clean[(df_clean['fndng_tgt_{}'.format(year)] > 0) & (df_clean['fndng_tgt_{}'.format(year+1)] > 0) &\
-              (df_clean['part_cnt_{}'.format(year)] < 300000) & (df_clean['part_cnt_{}'.format(year)] > 100) & \
               (df_clean['not_qual'] == False)]
     
     df_clean.dropna(inplace=True)
-       
-    return df_clean
+    
+    #drop largest plan by ptp cnt
+    df_clean = df_clean.loc[df_clean['part_cnt_{}'.format(year)] != df_clean['part_cnt_{}'.format(year)].max()]
+    
+    #add length of pension_bft_code field to determine duplicates
+    df_clean['bnft_code_length'] = df_clean['type_pension_bnft_code'].str.len()
+    df_clean_no_dupes = df_clean.sort_values('bnft_code_length', ascending=False).groupby(['ein', 'pn']).head(1)
+    
+    return df_clean_no_dupes
 
 def get_feats(df, year):
     
@@ -97,7 +104,8 @@ def get_feats(df, year):
     Output: Features only
     
     '''
-    feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year)]
+    feat_list = ['eir', 'part_cnt_{}'.format(year), 'fndng_tgt_{}'.format(year), 'tgt_nrml_cost_{}'.format(year),'pmts_to_part_{}'.format(year),\
+                 'pay_related', 'cash_bal', 'frozen']
     df_feat = df[feat_list]
     
     return df_feat
@@ -114,4 +122,26 @@ def get_target(df, year):
     
     return target
        
+def partition_feats_by_ptp_cnt(year):
     
+   #partition_list = [0,50,300,500,800,1500,2500,5000,10000,50000,100000,500000]
+   partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
+   part_dict = {}
+  
+   prelim_df = get_data(year)
+   df = clean_data(prelim_df, year)
+  
+   X = get_feats(df, year)
+   y = get_target(df, year)
+  
+   for i in partition_list[0:len(partition_list)]:
+       min_count = i[0]
+       max_count = i[1]
+       X_part = X[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)] 
+       y_part = y[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)]
+       #part_dict["part_cnt" + str(i)] = (X_part,y_part)
+       X_part.drop('part_cnt_{}'.format(year), axis=1, inplace=True)
+       part_dict[i] = (X_part,y_part)
+      
+   return part_dict
+   
