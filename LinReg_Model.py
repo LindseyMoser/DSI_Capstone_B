@@ -6,7 +6,7 @@ import pandas as pd
 import warnings
 warnings.filterwarnings('ignore')
 import json
-import psycopg2
+from sqlalchemy import create_engine
 
 from get_clean_data_LinReg import get_data, clean_data, get_feats, get_target, partition_feats_by_ptp_cnt, partition_more_feats_by_ptp_cnt
 
@@ -50,6 +50,9 @@ if __name__ == '__main__':
     model.fit(training_data_dictionary)
     
     predict_year_list = [2015,2016]
+    
+    engine = create_engine('postgresql://moserfamily:cats@localhost:5432/capstone')
+    
     for year in predict_year_list:
         print("Getting data for prediction year {}\n".format(year))
         prediction_data_dictionary = partition_feats_by_ptp_cnt(year-1)
@@ -60,23 +63,14 @@ if __name__ == '__main__':
         combined = {}
         print("Combining data and predictions for year {}\n".format(year))
         for i in partition_list:
-            combined[i] = pd.concat([full_data[i][0], pd.DataFrame(model.prediction_dict[i]).rename(columns={0:'predicted_fndng_tgt_'.format(year)})], axis=1, join='inner')
-            #combined[i] = pd.concat([combined[i], full_data[i][1]], axis=1, join='inner')
-            df.append(combined[i])
-        print("Writing to csv for year {}\n".format(year))
-        df.to_csv('combined_data_predictions_actual_{}'.format(year))
-#        with open('1_Data/form5500_data/config.json') as f:
-#            conf = json.load(f)
-#            host = conf['host']
-#            database = conf['database']
-#            user = conf['user']
-#            passw = conf['passw']
-#        conn_str = "host={} dbname={} user={} password={}".format(host, database, user, passw)
-#        conn = psycopg2.connect(conn_str)
-#
-#        df.to_sql('combined_data_predictions_actual_{}'.format(year),con=conn)
-#        
-#        conn.close()
+            combined[i] = pd.concat([full_data[i][0], pd.DataFrame(data=model.prediction_dict[i], columns=['predicted_fndng_tgt_'.format(year)]), full_data[i][1]], axis=1)
+            df = pd.concat([df, combined[i]],axis=0)
+        print("Writing to postgres database for year {}\n".format(year))
+#        df.to_csv('combined_data_predictions_actual_{}'.format(year))
+
+#        data_types = {'eir': float, 'fndng_tgt_{}'.format(year): int, 'tgt_nrml_cost_2016': int, 'pmts_to_part_2016': int, '}
+        df.to_sql(name='combined_data_predictions_actual_{}'.format(year),con=engine,if_exists='replace')
+        
     
     #with open('model.pkl', 'wb') as f:
         # Write the model to a file.
