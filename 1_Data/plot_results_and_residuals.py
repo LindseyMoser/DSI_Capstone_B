@@ -28,7 +28,7 @@ def plot_results(y_true, y_pred, group_size, year):
     plt.show()
     return
 
-def plot_residuals(y_true, y_pred):
+def plot_residuals(y_true, y_pred, group_size):
     '''
     Produces a scatterplot of residuals (difference of true value over predicted value)
     Input:  True values and predicted values of target variable
@@ -42,7 +42,7 @@ def plot_residuals(y_true, y_pred):
     plt.scatter(xx, resid, s=20, c="blue", label="residuals")
     plt.xlabel("data")
     plt.ylabel("residual")
-    plt.title("Residuals of Predictions vs Actuals (Linear Regerssion)")
+    plt.title("Residuals of Predictions vs Actuals: Class Size: {}".format(group_size))
     plt.legend()
     plt.show()
     return
