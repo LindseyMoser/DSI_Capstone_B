@@ -60,7 +60,7 @@ if __name__ == '__main__':
     
     partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     
-    train_year = 2015
+    train_year = 2014
     print("Getting data for training year {}\n".format(train_year))
     training_data_dictionary = partition_feats_by_ptp_cnt(train_year)      
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     model = OLS_Model(train_year, partition_list)     
     model.fit(training_data_dictionary)
     
-    predict_year_list = [2016]
+    predict_year_list = [2015,2016]
     
     engine = create_engine('postgresql://moserfamily:cats@localhost:5432/capstone')
     
@@ -82,13 +82,15 @@ if __name__ == '__main__':
         combined = {}
         print("Combining data and predictions for year {}\n".format(year))
         for i in partition_list:
-            combined[i] = pd.concat([full_data[i][0], pd.DataFrame(data=model.prediction_dict[i], columns=['predicted_fndng_tgt_{}'.format(year)]), full_data[i][1]], axis=1)
+            combined[i] = pd.concat([full_data[i][0], \
+                                    pd.DataFrame(data=model.prediction_dict[i], columns=['predicted_fndng_tgt_{}'.format(year)]), \
+                                    full_data[i][1]], axis=1)
+            combined[i]['partition'] = str(i)
             df = pd.concat([df, combined[i]],axis=0)
         df.reset_index(drop=True)
+        
         print("Writing to postgres database for year {}\n".format(year))
-#        df.to_csv('combined_data_predictions_actual_{}'.format(year))
-
-#        data_types = {'eir': float, 'fndng_tgt_{}'.format(year): int, 'tgt_nrml_cost_2016': int, 'pmts_to_part_2016': int, '}
         df.to_sql(name='predictions_{}_trained_{}'.format(year, train_year),con=engine,if_exists='replace')
+        print("Program complete!")
         
     
