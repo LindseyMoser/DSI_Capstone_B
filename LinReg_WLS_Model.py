@@ -36,7 +36,7 @@ class OLS_Model(object):
         '''
         for i in partition_list:
             X, y = cleaned_dictionary_of_df_split_by_size[i]
-            self.model_dict[i] = sm.OLS(y, X, hasconst=False).fit()
+            self.model_dict[i] = sm.WLS(y, X, hasconst=False).fit()
     
     def predict(self, partitioned_data):
         '''
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     
     partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     
-    train_year = 2015
+    train_year = 2013
     print("Getting data for training year {}\n".format(train_year))
     training_data_dictionary = partition_feats_by_ptp_cnt(train_year)      
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     model = OLS_Model(train_year, partition_list)     
     model.fit(training_data_dictionary)
     
-    predict_year_list = [2016]
+    predict_year_list = [2014, 2015]
     
     engine = create_engine('postgresql://moserfamily:cats@localhost:5432/capstone')
     
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         df.reset_index(drop=True)
         
         print("Writing to postgres database for year {}\n".format(year))
-        df.to_sql(name='predictions_{}_trained_{}'.format(year, train_year),con=engine,if_exists='replace')
+        df.to_sql(name='predictions_{}_trained_{}_wls'.format(year, train_year),con=engine,if_exists='replace')
     print("Program complete!")
         
     
