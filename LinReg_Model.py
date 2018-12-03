@@ -10,9 +10,13 @@ from sqlalchemy import create_engine
 
 from get_clean_data_LinReg import get_data, clean_data, get_feats, get_target, partition_feats_by_ptp_cnt, partition_more_feats_by_ptp_cnt
 
-import pickle
-
 class OLS_Model(object):
+    
+    '''
+    Ordinary Least Squares Linear Regression model
+    Trained on 20XX data, gets predictions for 20XX+1 funding target
+    
+    '''
     
     def __init__(self, train_year, partition_list):
         '''
@@ -45,6 +49,15 @@ class OLS_Model(object):
     
 
 if __name__ == '__main__':
+    
+    '''
+    Partition data in train_year based on partition_list (currently partitioning on plan participant count)
+    Train Ordinary Least Squares model on train_year data to predict subsequent year funding target
+        (e.g. model trained on 2015 data will predicted 2016 funding target)
+    Make predictions of funding target for years in predict_year_list
+    Store predictions, features and other data into postgres database
+    '''
+    
     partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     
     train_year = 2015
@@ -78,9 +91,4 @@ if __name__ == '__main__':
 #        data_types = {'eir': float, 'fndng_tgt_{}'.format(year): int, 'tgt_nrml_cost_2016': int, 'pmts_to_part_2016': int, '}
         df.to_sql(name='predictions_{}_trained_{}'.format(year, train_year),con=engine,if_exists='replace')
         
-    
-    #with open('model.pkl', 'wb') as f:
-        # Write the model to a file.
-    #    pickle.dump(model, f)
-    
     
