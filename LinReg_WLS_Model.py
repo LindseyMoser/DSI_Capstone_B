@@ -32,7 +32,7 @@ class WLS_Model(object):
 
     def fit(self, cleaned_dictionary_of_df_split_by_size):
         '''
-        Fit Ordinary Least Squares Linear Regression with training data
+        Fit Weighted Least Squares Linear Regression with training data
         '''
         for i in partition_list:
             X, y = cleaned_dictionary_of_df_split_by_size[i]
@@ -52,8 +52,8 @@ if __name__ == '__main__':
     
     '''
     Partition data in train_year based on partition_list (currently partitioning on plan participant count)
-    Train Ordinary Least Squares model on train_year data to predict subsequent year funding target
-        (e.g. model trained on 2015 data will predicted 2016 funding target)
+    Train Weighted Least Squares model on train_year data to predict subsequent year funding target
+        (e.g. model trained on 2015 data will predict 2016 funding target)
     Make predictions of funding target for years in predict_year_list
     Store predictions, features and other data into postgres database
     '''

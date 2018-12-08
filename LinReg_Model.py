@@ -53,14 +53,14 @@ if __name__ == '__main__':
     '''
     Partition data in train_year based on partition_list (currently partitioning on plan participant count)
     Train Ordinary Least Squares model on train_year data to predict subsequent year funding target
-        (e.g. model trained on 2015 data will predicted 2016 funding target)
+        (e.g. model trained on 2015 data will predict 2016 funding target)
     Make predictions of funding target for years in predict_year_list
     Store predictions, features and other data into postgres database
     '''
     
     partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     
-    train_year = 2015
+    train_year = 2012
     print("Getting data for training year {}\n".format(train_year))
     training_data_dictionary = partition_feats_by_ptp_cnt(train_year)      
 
@@ -68,9 +68,17 @@ if __name__ == '__main__':
     model = OLS_Model(train_year, partition_list)     
     model.fit(training_data_dictionary)
     
-    predict_year_list = [2016]
+    predict_year_list = [2014, 2015]
     
-    engine = create_engine('postgresql://moserfamily:cats@localhost:5432/capstone')
+    with open('1_Data/form5500_data/config.json') as f:
+        conf = json.load(f)
+        host = conf['host']
+        database = conf['database']
+        user = conf['user']
+        passw = conf['passw']
+        port = conf['port']           
+    conn_str = 'postgresql://{}:{}@localhost:{}/{}'.format(user, passw, port, database)
+    engine = create_engine(conn_str)
     
     for year in predict_year_list:
         print("Getting data for prediction year {}\n".format(year))
@@ -91,6 +99,7 @@ if __name__ == '__main__':
         
         print("Writing to postgres database for year {}\n".format(year))
         df.to_sql(name='predictions_{}_trained_{}'.format(year, train_year),con=engine,if_exists='replace')
+    
     print("Program complete!")
         
     
