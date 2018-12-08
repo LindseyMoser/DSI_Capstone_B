@@ -70,7 +70,15 @@ if __name__ == '__main__':
     
     predict_year_list = [2013, 2014]
     
-    engine = create_engine('postgresql://moserfamily:cats@localhost:5432/capstone')
+    with open('1_Data/form5500_data/config.json') as f:
+        conf = json.load(f)
+        host = conf['host']
+        database = conf['database']
+        user = conf['user']
+        passw = conf['passw']
+        port = conf['port']           
+    conn_str = 'postgresql://{}:{}@localhost:{}/{}'.format(user, passw, port, database)
+    engine = create_engine(conn_str)
     
     for year in predict_year_list:
         print("Getting data for prediction year {}\n".format(year))
