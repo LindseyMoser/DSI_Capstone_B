@@ -44,7 +44,7 @@ where:<br>
 
 <h2>Presentation</h2>
 <p>
-<a href="https://www.youtube.com/embed/mbNt1GXkcCQ" target="_blank">See my presentation on YouTube here!</p>
+<a href="https://www.youtube.com/embed/mbNt1GXkcCQ" target="_blank">See my presentation on YouTube here!</a></p>
 
 <h2>Technology Stack</h2>
 <img src="/images/python_img.png" alt="python"> <img src="/images/postgres_img.png" alt="postgres_sql"><img src="/images/numpy_img.png" alt="numpy"><img src="/images/aws_img.png" alt="amazon web services">
