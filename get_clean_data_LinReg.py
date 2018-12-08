@@ -175,9 +175,6 @@ def partition_feats_by_ptp_cnt(year):
         max_count = i[1]
         X_part = X[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)].reset_index(drop=True)
         y_part = y[(X['part_cnt_{}'.format(year)] > min_count) & (X['part_cnt_{}'.format(year)] <= max_count)].reset_index(drop=True)
-        #part_dict["part_cnt" + str(i)] = (X_part,y_part)
-        #X_part.reset_index(drop=True)
-        #y_part.reset_index(drop=True)
         X_part.drop('part_cnt_{}'.format(year), axis=1, inplace=True)
         part_dict[i] = (X_part,y_part)
         
@@ -185,7 +182,6 @@ def partition_feats_by_ptp_cnt(year):
     
 def partition_more_feats_by_ptp_cnt(year):
     
-    #partition_list = [0,50,300,500,800,1500,2500,5000,10000,50000,100000,500000]
     partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     part_dict = {}
     

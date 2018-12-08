@@ -10,10 +10,10 @@ from sqlalchemy import create_engine
 
 from get_clean_data_LinReg import get_data, clean_data, get_feats, get_target, partition_feats_by_ptp_cnt, partition_more_feats_by_ptp_cnt
 
-class OLS_Model(object):
+class WLS_Model(object):
     
     '''
-    Ordinary Least Squares Linear Regression model
+    Weighted Least Squares Linear Regression model
     Trained on 20XX data, gets predictions for 20XX+1 funding target
     
     '''
@@ -60,15 +60,15 @@ if __name__ == '__main__':
     
     partition_list = [(0,300),(300,500),(500,800),(800,1500),(1500,2500),(2500,5000),(5000,10000),(10000,50000),(50000,100000),(100000,500000)]
     
-    train_year = 2013
+    train_year = 2012
     print("Getting data for training year {}\n".format(train_year))
     training_data_dictionary = partition_feats_by_ptp_cnt(train_year)      
 
     print("Fitting model with {} data\n".format(train_year))
-    model = OLS_Model(train_year, partition_list)     
+    model = WLS_Model(train_year, partition_list)     
     model.fit(training_data_dictionary)
     
-    predict_year_list = [2014, 2015]
+    predict_year_list = [2013, 2014]
     
     engine = create_engine('postgresql://moserfamily:cats@localhost:5432/capstone')
     
